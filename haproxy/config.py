@@ -29,10 +29,7 @@ def parse_extra_frontend_settings(envvars):
             settings = []
             match = frontend_settings_pattern.match(k)
             file_match = frontend_settings_file_pattern.match(k)
-            if match:
-                port = match.group(1)
-                settings.extend([x.strip().replace("\,", ",") for x in re.split(r'(?<!\\),', v.strip())])
-            elif file_match:
+            if file_match:
                 port = file_match.group(1)
                 try:
                     with open(v) as file:
@@ -40,6 +37,9 @@ def parse_extra_frontend_settings(envvars):
                             settings.append(line.strip())
                 except Exception as e:
                     logger.info("Error reading %s at '%s', error %s" % (k, v, e))
+            elif match:
+                port = match.group(1)
+                settings.extend([x.strip().replace("\,", ",") for x in re.split(r'(?<!\\),', v.strip())])
 
             if len(settings) > 0:
                 if port in settings_dict:
